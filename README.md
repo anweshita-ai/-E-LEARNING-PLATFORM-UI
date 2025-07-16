@@ -71,5 +71,3 @@ This project can be applied in various academic, professional, and personal sett
 LearnHub is a well-organized e-learning platform built using essential web development technologies. It balances simplicity and functionality by providing a clean interface, responsive layout, interactive components, and data persistence through browser storage. With no external dependencies or frameworks, the platform remains lightweight and easy to maintain. It effectively fulfills the requirements of a front-end based learning management system prototype.
 
 #OUTPUT
-
-![Image](https://github.com/user-attachments/assets/ea4915a3-1b31-467d-b799-e41baa6f45b3)
