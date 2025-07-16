@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LearnHub - E-Learning Platform</title>
+  <style>
+    :root {
+      --bg: #fffaf0;
+      --card: #ffffff;
+      --text: #1e1e2f;
+      --accent: #002855;
+      --btn: #002855;
+      --btn-hover: #004080;
+    }
+    body.dark {
+      --bg: #121c2a;
+      --card: #1f2a3a;
+      --text: #f5f5f5;
+      --accent: #a3d5ff;
+      --btn: #1a73e8;
+      --btn-hover: #5393ff;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      transition: all 0.3s ease;
+    }
+
+    nav {
+      background: var(--accent);
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 999;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin-left: 1rem;
+      font-weight: bold;
+    }
+    nav .toggle-mode {
+      background: white;
+      color: var(--accent);
+      border: none;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    header {
+      padding: 4rem 2rem;
+      text-align: center;
+      background: var(--card);
+    }
+    header h1 {
+      font-size: 3rem;
+      color: var(--accent);
+    }
+
+    .container {
+      padding: 2rem;
+      max-width: 1200px;
+      margin: auto;
+    }
+    section h2 {
+      color: var(--accent);
+      margin-bottom: 1rem;
+      font-size: 2rem;
+    }
+
+    .filters {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+    .filters input, .filters select {
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+
+    .course-card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+      margin-bottom: 1.5rem;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .course-card:hover {
+      transform: translateY(-6px);
+    }
+    .course-card h3 {
+      color: var(--accent);
+    }
+
+    .btn {
+      background: var(--btn);
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+    .btn:hover {
+      background: var(--btn-hover);
+    }
+
+    .badge {
+      background: var(--accent);
+      color: white;
+      padding: 0.2rem 0.6rem;
+      border-radius: 5px;
+      font-size: 0.8rem;
+      margin-right: 0.5rem;
+    }
+
+    .video-container {
+      text-align: center;
+      margin-top: 1.5rem;
+    }
+    iframe {
+      width: 100%;
+      max-width: 800px;
+      height: 450px;
+      border: none;
+      border-radius: 10px;
+    }
+
+    .progress {
+      background: #ccc;
+      height: 10px;
+      border-radius: 10px;
+      margin-top: 1rem;
+    }
+    .progress-bar {
+      height: 100%;
+      background: var(--accent);
+      width: 0;
+      transition: width 0.5s;
+    }
+
+    footer {
+      background: var(--accent);
+      text-align: center;
+      color: white;
+      padding: 1rem;
+    }
+
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--accent);
+      color: white;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+      display: none;
+      z-index: 1000;
+    }
+
+    @media (max-width: 600px) {
+      header h1 { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="toast" id="toast">Enrolled successfully!</div>
+
+  <!-- Navigation -->
+  <nav>
+    <div><strong>LearnHub</strong></div>
+    <div>
+      <a href="#home">Home</a>
+      <a href="#courses">Courses</a>
+      <a href="#my-courses">My Courses</a>
+      <a href="#details">Details</a>
+      <button class="toggle-mode" onclick="toggleMode()">🌓</button>
+    </div>
+  </nav>
+
+  <!-- Header -->
+  <header id="home">
+    <h1>Welcome to LearnHub</h1>
+    <p>Your gateway to mastering new skills online!</p>
+  </header>
+
+  <!-- Courses -->
+  <section id="courses" class="container">
+    <h2>Available Courses</h2>
+    <div class="filters">
+      <input type="text" id="searchInput" placeholder="Search courses...">
+      <select id="categoryFilter">
+        <option value="all">All Categories</option>
+        <option value="web">Web Development</option>
+        <option value="python">Python</option>
+        <option value="data">Data Science</option>
+      </select>
+    </div>
+    <div id="courseList"></div>
+  </section>
+
+  <!-- My Courses -->
+  <section id="my-courses" class="container">
+    <h2>My Enrolled Courses</h2>
+    <div id="enrolledCourses"></div>
+  </section>
+
+  <!-- Course Detail -->
+  <section id="details" class="container">
+    <h2>Course Detail: Web Development Bootcamp</h2>
+    <p>This course includes 30+ lessons on HTML, CSS, JavaScript and real-world project development. Learn to build modern, responsive websites from scratch.</p>
+
+    <div class="video-container">
+      <iframe src="https://www.youtube.com/embed/ZxKM3DCV2kE" title="Course Intro Video"></iframe>
+    </div>
+
+    <h3 style="margin-top:2rem;">Your Progress</h3>
+    <div class="progress">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <br>
+    <button class="btn" onclick="updateProgress()">Mark Lesson Complete</button>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    &copy; 2025 LearnHub. All rights reserved.
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    const courses = [
+      { title: "Web Development Bootcamp", desc: "Build websites using HTML, CSS, and JavaScript.", category: "web", duration: "6 Weeks", level: "Beginner" },
+      { title: "Python for Beginners", desc: "Master Python programming step-by-step.", category: "python", duration: "4 Weeks", level: "Beginner" },
+      { title: "Data Science & AI", desc: "Learn analytics, visualization & ML models.", category: "data", duration: "8 Weeks", level: "Advanced" },
+      { title: "JavaScript Mastery", desc: "Deep dive into ES6+, async, APIs, DOM.", category: "web", duration: "5 Weeks", level: "Intermediate" }
+    ];
+
+    const searchInput = document.getElementById("searchInput");
+    const categoryFilter = document.getElementById("categoryFilter");
+    const courseList = document.getElementById("courseList");
+    const enrolledCourses = document.getElementById("enrolledCourses");
+    const toast = document.getElementById("toast");
+
+    function displayCourses() {
+      const search = searchInput.value.toLowerCase();
+      const category = categoryFilter.value;
+      courseList.innerHTML = "";
+
+      const filtered = courses.filter(course =>
+        course.title.toLowerCase().includes(search) &&
+        (category === "all" || course.category === category)
+      );
+
+      filtered.forEach(course => {
+        const card = document.createElement("div");
+        card.className = "course-card";
+        card.innerHTML = `
+          <h3>${course.title}</h3>
+          <p>${course.desc}</p>
+          <span class="badge">${course.duration}</span>
+          <span class="badge">${course.level}</span>
+          <br><br>
+          <button class="btn" onclick="enroll('${course.title}')">Enroll</button>
+        `;
+        courseList.appendChild(card);
+      });
+    }
+
+    function enroll(courseTitle) {
+      let myCourses = JSON.parse(localStorage.getItem("myCourses")) || [];
+      if (!myCourses.includes(courseTitle)) {
+        myCourses.push(courseTitle);
+        localStorage.setItem("myCourses", JSON.stringify(myCourses));
+        showToast(`${courseTitle} added!`);
+        loadEnrolled();
+      }
+    }
+
+    function loadEnrolled() {
+      let myCourses = JSON.parse(localStorage.getItem("myCourses")) || [];
+      enrolledCourses.innerHTML = myCourses.length ? "" : "<p>No courses enrolled yet.</p>";
+      myCourses.forEach(title => {
+        const div = document.createElement("div");
+        div.className = "course-card";
+        div.innerHTML = `<h3>${title}</h3>`;
+        enrolledCourses.appendChild(div);
+      });
+    }
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.style.display = "block";
+      setTimeout(() => toast.style.display = "none", 2000);
+    }
+
+    let progress = parseInt(localStorage.getItem("webProgress")) || 0;
+    const progressBar = document.getElementById("progressBar");
+    progressBar.style.width = progress + "%";
+
+    function updateProgress() {
+      if (progress < 100) {
+        progress += 20;
+        progressBar.style.width = progress + "%";
+        localStorage.setItem("webProgress", progress);
+      }
+    }
+
+    function toggleMode() {
+      document.body.classList.toggle("dark");
+      localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
+    }
+
+    displayCourses();
+    loadEnrolled();
+    if (localStorage.getItem("theme") === "dark") {
+      document.body.classList.add("dark");
+    }
+
+    searchInput.addEventListener("input", displayCourses);
+    categoryFilter.addEventListener("change", displayCourses);
+  </script>
+</body>
+</html>
